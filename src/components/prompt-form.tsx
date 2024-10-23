@@ -1,8 +1,7 @@
 "use client";
 
 import { env } from "~/env";
-import Image from "next/image";
-import { useState } from "react";
+import { useImageStore } from "~/store/image-store";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -49,7 +48,7 @@ async function query(values: z.infer<typeof formSchema>) {
       model: "cagliostrolab/animagine-xl-3.1",
       parameters: {
         guidance_scale: 7,
-        height: 1152,
+        height: 896,
         width: 896,
         negative_prompt:
           "nsfw, lowres, (bad), text, error, fewer, extra, missing, worst quality, jpeg artifacts, low quality, watermark, unfinished, displeasing, oldest, early, chromatic aberration, signature, extra digits, artistic error, username, scan, [abstract]",
@@ -63,7 +62,9 @@ async function query(values: z.infer<typeof formSchema>) {
 }
 
 export function PromptForm() {
-  const [imageURL, setImageURL] = useState("");
+  const imageURL = useImageStore((state) => state.imageURL);
+  const setImageURL = useImageStore((state) => state.setImageURL);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -91,31 +92,28 @@ export function PromptForm() {
   }
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Inputs */}
-          <FormField
-            control={form.control}
-            name="inputs"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Prompt</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="1girl, green hair, sweater, looking at viewer, upper body, beanie, outdoors, night, turtleneck, masterpiece, best quality, very aesthetic"
-                    rows={4}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-      {imageURL && <Image src={imageURL} alt="" width={896} height={1152} />}
-    </>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Inputs */}
+        <FormField
+          control={form.control}
+          name="inputs"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prompt</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  placeholder="1girl, green hair, sweater, looking at viewer, upper body, beanie, outdoors, night, turtleneck, masterpiece, best quality, very aesthetic"
+                  rows={4}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
   );
 }
