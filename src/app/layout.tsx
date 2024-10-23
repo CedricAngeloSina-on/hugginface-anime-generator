@@ -3,8 +3,9 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
-import { SidebarProvider } from "~/components/ui/sidebar";
 import { AppSidebar } from "~/components/app-sidebar";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import { ThemeProvider } from "~/components/theme-switcher";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -16,12 +17,23 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html
+      lang="en"
+      className={`${GeistSans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="w-full">{children}</main>
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full">{children}</main>
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
